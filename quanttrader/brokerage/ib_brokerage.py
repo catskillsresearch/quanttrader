@@ -690,9 +690,17 @@ class IBApi(EWrapper, EClient):  # type: ignore
         # we can start now
         self.broker.subscribe_market_datas()
 
-    def error(self, reqId: TickerId, errorCode: int, errorString: str) -> None:  # type: ignore
-        super().error(reqId, errorCode, errorString)
-        msg = f"Error. id: {reqId}, Code: {errorCode}, Msg: {errorString}"
+    def error(
+        self,
+        reqId: TickerId,
+        errorTime: int,
+        errorCode: int,
+        errorString: str,
+        advancedOrderRejectJson="",
+    ):
+        super().error(reqId,errorTime,errorCode,errorString,advancedOrderRejectJson)
+        tag = "Warning" if errorCode == -1 else "Error"
+        msg = f"{tag}. id: {reqId}, Code: {errorCode}, Msg: {errorString}, time: {errorTime}, AOR: {advancedOrderRejectJson}"
         _logger.error(msg)
         self.broker.log(msg)
 
