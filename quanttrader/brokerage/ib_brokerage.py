@@ -9,7 +9,7 @@ import pandas as pd
 from ibapi import utils
 from ibapi.account_summary_tags import *
 from ibapi.client import EClient
-from ibapi.commission_report import CommissionReport
+from ibapi.commission_and_fees_report import CommissionAndFeesReport
 
 # types
 from ibapi.common import *  # @UnusedWildImport
@@ -1552,9 +1552,17 @@ class IBApi(EWrapper, EClient):  # type: ignore
             f"DisplayGroupUpdated. ReqId: {reqId}, ContractInfo: {contractInfo}"
         )
 
-    def commissionReport(self, commissionReport: CommissionReport) -> None:
-        super().commissionReport(commissionReport)
-        _logger.info(f"CommissionReport. {commissionReport}")
+    def commissionAndFeesReport(self, report: CommissionAndFeesReport) -> None:
+        """
+        Callback for commission and fees reports (IB API 10.37.2+).
+        Logs the information and calls the base class handler.
+        """
+        # Call parent handler if it exists
+        if hasattr(super(), "commissionAndFeesReport"):
+            super().commissionAndFeesReport(report)
+
+        # Log the received commission/fees report
+        _logger.info(f"Commission and Fees Report received: {report}")
 
     def completedOrder(
         self, contract: Contract, order: Order, orderState: OrderState  # type: ignore
